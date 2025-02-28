@@ -27,4 +27,27 @@ public class DeckOfCards {
     }
   }
 
+  private String getRandomCard() {
+    if (deckOfCards.isEmpty()) {
+      return "No more cards in the deck";
+    }
+
+    Random random = new Random();
+
+    List<String> availableCards = new ArrayList<>(deckOfCards.keySet());
+
+    int randomIndex = random.nextInt(availableCards.size());
+    String randomCard = availableCards.get(randomIndex);
+
+    deckOfCards.remove(randomCard);
+
+    return randomCard;
+  }
+
+  public void dealCards(int n) {
+    for (int i = 0; i < n; i++) {
+      System.out.println(getRandomCard());
+    }
+  }
+
 }
