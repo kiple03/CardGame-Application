@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.intro.model.DeckOfCards;
@@ -25,7 +26,37 @@ public class CardGameApplication extends Application {
 
         root.setTop(displayHeader("Card Game"));
         root.setRight(displayRightSideControls());
+        root.setCenter(displayMainContent());
 
+    }
+
+    private Node displayMainContent() {
+        VBox mainContent = new VBox();
+        mainContent.setAlignment(Pos.TOP_CENTER);
+        mainContent.setPadding(new javafx.geometry.Insets(50));
+        mainContent.setSpacing(20);
+
+        StackPane gameFrame = new StackPane();
+        gameFrame.setStyle("-fx-background-color: #858383;");
+        gameFrame.setMaxHeight(400);
+        gameFrame.setMinHeight(400);
+        gameFrame.setMaxWidth(600);
+        gameFrame.setMinWidth(600);
+
+        HBox resultBox1 = new HBox(40);
+
+        Label sumOfHand = new Label("Sum of Hand: ");
+        Label cardsOfHearts = new Label("Cards of Hearts: ");
+        resultBox1.getChildren().addAll(sumOfHand, cardsOfHearts);
+
+        HBox resultBox2 = new HBox(40);
+        Label isItFlush = new Label("Is it a Flush: ");
+        Label isThereQueenOfSpades = new Label("Is there a Queen of Spades: ");
+        resultBox2.getChildren().addAll(isItFlush, isThereQueenOfSpades);
+
+        mainContent.getChildren().addAll(gameFrame, resultBox1, resultBox2);
+
+        return mainContent;
     }
 
     private Node displayHeader(String title) {
@@ -45,7 +76,6 @@ public class CardGameApplication extends Application {
         VBox controls = new VBox(20);
         controls.setPrefWidth(200);
         controls.setAlignment(Pos.CENTER);
-
 
         Button dealHandButton = new Button("Deal Hand");
 
