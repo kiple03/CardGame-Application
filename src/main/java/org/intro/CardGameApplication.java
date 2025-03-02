@@ -6,6 +6,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -14,6 +16,9 @@ import javafx.scene.layout.VBox;
 import org.intro.model.DeckOfCards;
 
 public class CardGameApplication extends Application {
+
+    private DeckOfCards deckOfCards = new DeckOfCards();
+    private StackPane gameFrame = new StackPane();
 
     @Override
     public void start(javafx.stage.Stage primaryStage) {
@@ -36,7 +41,7 @@ public class CardGameApplication extends Application {
         mainContent.setPadding(new javafx.geometry.Insets(50));
         mainContent.setSpacing(20);
 
-        StackPane gameFrame = new StackPane();
+        gameFrame = new StackPane();
         gameFrame.setStyle("-fx-background-color: #858383;");
         gameFrame.setMaxHeight(400);
         gameFrame.setMinHeight(400);
@@ -78,12 +83,39 @@ public class CardGameApplication extends Application {
         controls.setAlignment(Pos.CENTER);
 
         Button dealHandButton = new Button("Deal Hand");
+        dealHandButton.setOnAction(e -> {
+            System.out.println("Dealing Hand");
+            String[] cards = deckOfCards.getCards(5);
+
+            showHand(cards);
+        });
 
         Button checkHandButton = new Button("Check Hand");
 
         controls.getChildren().addAll(dealHandButton, checkHandButton);
 
         return controls;
+    }
+
+    private void showHand(String[] cards) {
+        HBox hand = new HBox(20);
+        hand.setAlignment(Pos.CENTER);
+
+        for (String card : cards) {
+            hand.getChildren().add(getCardImage(card));
+        }
+
+        gameFrame.getChildren().clear();
+        gameFrame.getChildren().add(hand);
+    }
+
+    private ImageView getCardImage(String card) {
+        String cardName = card + ".png";
+        Image image = new Image(getClass().getResourceAsStream("/cardImages/" + cardName));
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(150);
+        imageView.setFitWidth(100);
+        return imageView;
     }
 
     public static void main(String[] args) {

@@ -27,7 +27,7 @@ public class DeckOfCards {
     }
   }
 
-  private String getRandomCard() {
+  public String getRandomCard() {
     if (deckOfCards.isEmpty()) {
       return "No more cards in the deck";
     }
@@ -44,10 +44,13 @@ public class DeckOfCards {
     return randomCard;
   }
 
-  public void dealCards(int n) {
+  public String[] getCards(int n) {
+    String[] hand = new String[n];
     for (int i = 0; i < n; i++) {
-      System.out.println(getRandomCard());
+      hand[i] = getRandomCard();
     }
+    return hand;
   }
+
 
 }
