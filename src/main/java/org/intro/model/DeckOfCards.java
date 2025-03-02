@@ -44,12 +44,22 @@ public class DeckOfCards {
     return randomCard;
   }
 
+  public void returnHandToDeck(String[] hand) {
+    for (String card : hand) {
+      deckOfCards.put(card, deckOfCards.get(card));
+    }
+  }
+
   public String[] getCards(int n) {
     String[] hand = new String[n];
     for (int i = 0; i < n; i++) {
       hand[i] = getRandomCard();
     }
     return hand;
+  }
+
+  public HashMap<String, Integer> getDeckOfCards() {
+    return deckOfCards;
   }
 
 

@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -19,6 +18,7 @@ public class CardGameApplication extends Application {
 
     private DeckOfCards deckOfCards = new DeckOfCards();
     private StackPane gameFrame = new StackPane();
+    private String[] cards;
 
     @Override
     public void start(javafx.stage.Stage primaryStage) {
@@ -50,14 +50,14 @@ public class CardGameApplication extends Application {
 
         HBox resultBox1 = new HBox(40);
 
-        Label sumOfHand = new Label("Sum of Hand: ");
-        Label cardsOfHearts = new Label("Cards of Hearts: ");
-        resultBox1.getChildren().addAll(sumOfHand, cardsOfHearts);
+        Label sumOfHandLabel = new Label();
+        Label cardsOfHeartsLabe = new Label();
+        resultBox1.getChildren().addAll(sumOfHandLabel, cardsOfHeartsLabe);
 
         HBox resultBox2 = new HBox(40);
-        Label isItFlush = new Label("Is it a Flush: ");
-        Label isThereQueenOfSpades = new Label("Is there a Queen of Spades: ");
-        resultBox2.getChildren().addAll(isItFlush, isThereQueenOfSpades);
+        Label isItFlushLabel = new Label();
+        Label isThereQueenOfSpadesLabel = new Label();
+        resultBox2.getChildren().addAll(isItFlushLabel, isThereQueenOfSpadesLabel);
 
         mainContent.getChildren().addAll(gameFrame, resultBox1, resultBox2);
 
@@ -85,17 +85,71 @@ public class CardGameApplication extends Application {
         Button dealHandButton = new Button("Deal Hand");
         dealHandButton.setOnAction(e -> {
             System.out.println("Dealing Hand");
-            String[] cards = deckOfCards.getCards(5);
+            cards = null;
+            cards = deckOfCards.getCards(5);
 
             showHand(cards);
         });
 
         Button checkHandButton = new Button("Check Hand");
+        checkHandButton.setOnAction(e -> {
+            System.out.println("Checking Hand");
+            checkHand();
+        });
 
         controls.getChildren().addAll(dealHandButton, checkHandButton);
 
         return controls;
     }
+
+    private void checkHand() {
+
+        int sum = 0;
+        int hearts = 0;
+        boolean flush = true;
+        boolean queenOfSpades = false;
+
+        for (String card : cards) {
+            char type = card.charAt(0);
+            int cardValue = Integer.parseInt(card.substring(1)) ;
+
+            if (type == 'H') {
+                hearts++;
+            }
+
+            if (cardValue == 12 && type == 'S') {
+                queenOfSpades = true;
+            }
+
+            sum += cardValue;
+        }
+
+        if (hearts != 5) {
+            flush = false;
+        }
+
+        updateLabels(sum, hearts, flush, queenOfSpades);
+
+    }
+
+    private void updateLabels(int sum, int hearts, boolean flush, boolean queenOfSpades) {
+
+        Node mainContent = ((BorderPane) gameFrame.getScene().getRoot()).getCenter();
+        HBox resultBox1 = (HBox) ((VBox) mainContent).getChildren().get(1);
+        HBox resultBox2 = (HBox) ((VBox) mainContent).getChildren().get(2);
+
+        Label sumOfHandLabel = (Label) resultBox1.getChildren().get(0);
+        Label cardsOfHeartsLabel = (Label) resultBox1.getChildren().get(1);
+        Label isItFlushLabel = (Label) resultBox2.getChildren().get(0);
+        Label isThereQueenOfSpadesLabel = (Label) resultBox2.getChildren().get(1);
+
+        // Update the labels with the results
+        sumOfHandLabel.setText("Sum of Hand: " + sum);
+        cardsOfHeartsLabel.setText("Cards of Hearts: " + hearts);
+        isItFlushLabel.setText("Is it a Flush: " + flush);
+        isThereQueenOfSpadesLabel.setText("Is there a Queen of Spades: " + queenOfSpades);
+    }
+
 
     private void showHand(String[] cards) {
         HBox hand = new HBox(20);
@@ -107,6 +161,8 @@ public class CardGameApplication extends Application {
 
         gameFrame.getChildren().clear();
         gameFrame.getChildren().add(hand);
+
+        deckOfCards.returnHandToDeck(cards);
     }
 
     private ImageView getCardImage(String card) {
