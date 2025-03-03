@@ -1,6 +1,7 @@
 package org.intro;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -12,6 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.intro.model.DeckOfCards;
 
 public class CardGameApplication extends Application {
@@ -21,7 +23,7 @@ public class CardGameApplication extends Application {
     private String[] cards;
 
     @Override
-    public void start(javafx.stage.Stage primaryStage) {
+    public void start(Stage primaryStage) {
         BorderPane root = new BorderPane();
         Scene scene = new Scene(root);
         primaryStage.setTitle("Card Game");
@@ -38,7 +40,7 @@ public class CardGameApplication extends Application {
     private Node displayMainContent() {
         VBox mainContent = new VBox();
         mainContent.setAlignment(Pos.TOP_CENTER);
-        mainContent.setPadding(new javafx.geometry.Insets(50));
+        mainContent.setPadding(new Insets(50));
         mainContent.setSpacing(20);
 
         gameFrame = new StackPane();
@@ -108,10 +110,18 @@ public class CardGameApplication extends Application {
         int hearts = 0;
         boolean flush = true;
         boolean queenOfSpades = false;
+        char typeCheck = cards[0].charAt(0);
+
 
         for (String card : cards) {
             char type = card.charAt(0);
             int cardValue = Integer.parseInt(card.substring(1)) ;
+
+            if (type != typeCheck) {
+                flush = false;
+            }
+
+            typeCheck = type;
 
             if (type == 'H') {
                 hearts++;
@@ -124,15 +134,11 @@ public class CardGameApplication extends Application {
             sum += cardValue;
         }
 
-        if (hearts != 5) {
-            flush = false;
-        }
-
         updateLabels(sum, hearts, flush, queenOfSpades);
 
     }
 
-    private void updateLabels(int sum, int hearts, boolean flush, boolean queenOfSpades) {
+    private void updateLabels(int sum, int hearts, boolean isFlush, boolean isQueenOfSpades) {
 
         Node mainContent = ((BorderPane) gameFrame.getScene().getRoot()).getCenter();
         HBox resultBox1 = (HBox) ((VBox) mainContent).getChildren().get(1);
@@ -146,14 +152,15 @@ public class CardGameApplication extends Application {
         // Update the labels with the results
         sumOfHandLabel.setText("Sum of Hand: " + sum);
         cardsOfHeartsLabel.setText("Cards of Hearts: " + hearts);
-        isItFlushLabel.setText("Is it a Flush: " + flush);
-        isThereQueenOfSpadesLabel.setText("Is there a Queen of Spades: " + queenOfSpades);
+        isItFlushLabel.setText("Is it a Flush: " + (isFlush? "Yes" : "No"));
+        isThereQueenOfSpadesLabel.setText("Is there a Queen of Spades: " + (isQueenOfSpades? "Yes" : "No"));
     }
-
 
     private void showHand(String[] cards) {
         HBox hand = new HBox(20);
         hand.setAlignment(Pos.CENTER);
+
+        hideHandCheckResults();
 
         for (String card : cards) {
             hand.getChildren().add(getCardImage(card));
@@ -163,6 +170,22 @@ public class CardGameApplication extends Application {
         gameFrame.getChildren().add(hand);
 
         deckOfCards.returnHandToDeck(cards);
+    }
+
+    private void hideHandCheckResults() {
+        Node mainContent = ((BorderPane) gameFrame.getScene().getRoot()).getCenter();
+        HBox resultBox1 = (HBox) ((VBox) mainContent).getChildren().get(1);
+        HBox resultBox2 = (HBox) ((VBox) mainContent).getChildren().get(2);
+
+        Label sumOfHandLabel = (Label) resultBox1.getChildren().get(0);
+        Label cardsOfHeartsLabel = (Label) resultBox1.getChildren().get(1);
+        Label isItFlushLabel = (Label) resultBox2.getChildren().get(0);
+        Label isThereQueenOfSpadesLabel = (Label) resultBox2.getChildren().get(1);
+
+        sumOfHandLabel.setText("");
+        cardsOfHeartsLabel.setText("");
+        isItFlushLabel.setText("");
+        isThereQueenOfSpadesLabel.setText("");
     }
 
     private ImageView getCardImage(String card) {
