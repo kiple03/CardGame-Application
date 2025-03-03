@@ -1,5 +1,7 @@
 package org.intro;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -106,39 +108,27 @@ public class CardGameApplication extends Application {
 
     private void checkHand() {
 
-        int sum = 0;
-        int hearts = 0;
-        boolean flush = true;
-        boolean queenOfSpades = false;
-        char typeCheck = cards[0].charAt(0);
+        int sum = Arrays.stream(cards)
+                .mapToInt(card -> Integer.parseInt(card.substring(1)))
+                .sum();
 
+        String cardsOfHearts = Arrays.stream(cards)
+                .filter(card -> card.charAt(0) == 'H')
+                .collect(Collectors.joining(","));
 
-        for (String card : cards) {
-            char type = card.charAt(0);
-            int cardValue = Integer.parseInt(card.substring(1)) ;
+        boolean hasFlush = Arrays.stream(cards)
+                .map(card -> card.charAt(0))
+                .distinct()
+                .count() == 1;
 
-            if (type != typeCheck) {
-                flush = false;
-            }
+        boolean hasQueenOfSpades = Arrays.stream(cards)
+                .anyMatch(card -> card.equals("S12"));
 
-            typeCheck = type;
-
-            if (type == 'H') {
-                hearts++;
-            }
-
-            if (cardValue == 12 && type == 'S') {
-                queenOfSpades = true;
-            }
-
-            sum += cardValue;
-        }
-
-        updateLabels(sum, hearts, flush, queenOfSpades);
+        updateLabels(sum, cardsOfHearts, hasFlush, hasQueenOfSpades);
 
     }
 
-    private void updateLabels(int sum, int hearts, boolean isFlush, boolean isQueenOfSpades) {
+    private void updateLabels(int sum, String cardsOfHeart, boolean isFlush, boolean isQueenOfSpades) {
 
         Node mainContent = ((BorderPane) gameFrame.getScene().getRoot()).getCenter();
         HBox resultBox1 = (HBox) ((VBox) mainContent).getChildren().get(1);
@@ -151,7 +141,7 @@ public class CardGameApplication extends Application {
 
         // Update the labels with the results
         sumOfHandLabel.setText("Sum of Hand: " + sum);
-        cardsOfHeartsLabel.setText("Cards of Hearts: " + hearts);
+        cardsOfHeartsLabel.setText("Cards of Hearts: " + cardsOfHeart);
         isItFlushLabel.setText("Is it a Flush: " + (isFlush? "Yes" : "No"));
         isThereQueenOfSpadesLabel.setText("Is there a Queen of Spades: " + (isQueenOfSpades? "Yes" : "No"));
     }
@@ -182,10 +172,10 @@ public class CardGameApplication extends Application {
         Label isItFlushLabel = (Label) resultBox2.getChildren().get(0);
         Label isThereQueenOfSpadesLabel = (Label) resultBox2.getChildren().get(1);
 
-        sumOfHandLabel.setText("");
-        cardsOfHeartsLabel.setText("");
-        isItFlushLabel.setText("");
-        isThereQueenOfSpadesLabel.setText("");
+        sumOfHandLabel.setText("Sum of Hand: ");
+        cardsOfHeartsLabel.setText("Cards of Hearts: ");
+        isItFlushLabel.setText("Is it a Flush?: ");
+        isThereQueenOfSpadesLabel.setText("Is there a Queen of Spades?: ");
     }
 
     private ImageView getCardImage(String card) {
